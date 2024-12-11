@@ -1,5 +1,6 @@
 package com.desafio.desafioreact.controller;
 
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,9 +34,9 @@ public class UsuarioController {
 
 	@Autowired
 	private UsuarioRepository usuarioRepository;
-	
+
 	@Autowired
-    private UsuarioService usuarioService;
+	private UsuarioService usuarioService;
 
 	@Autowired
 	private NivelPermissaoRepository nivelPermissaoRepository;
@@ -47,17 +48,15 @@ public class UsuarioController {
 			ObjectMapper objectMapper = new ObjectMapper();
 			Usuario usuario = objectMapper.readValue(usuarioJson, Usuario.class);
 
-			
 			NivelPermissao nivel = nivelPermissaoRepository.findById(usuario.getNivelPermissao().getId()).orElseThrow(
 					() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Nível de permissão inválido"));
 
 			usuario.setNivelPermissao(nivel);
 
-			 if (usuario.isAtivo()) {
-		            usuarioService.verificarLimiteUsuariosAtivos();
-		        }
+			if (usuario.isAtivo()) {
+				usuarioService.verificarLimiteUsuariosAtivos();
+			}
 
-			
 			if (imagem != null && !imagem.isEmpty()) {
 				usuario.setFoto_perfil(imagem.getBytes());
 			}
@@ -69,28 +68,46 @@ public class UsuarioController {
 					.body("Erro ao cadastrar usuário: " + ex.getMessage());
 		}
 	}
-	
-	
+
 	@GetMapping("/users")
 	public ResponseEntity<List<Usuario>> listarUsuarios() {
-	    try {
-	        List<Usuario> usuarios = usuarioRepository.findAll();
-	        return ResponseEntity.ok(usuarios);
-	    } catch (Exception ex) {
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body(null); 
-	    }
+		try {
+			List<Usuario> usuarios = usuarioRepository.findAll();
+			return ResponseEntity.ok(usuarios);
+		} catch (Exception ex) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+		}
 	}
-	
+
 	@GetMapping("/users/{id}")
 	public ResponseEntity<Usuario> obterUsuario(@PathVariable Long id) {
-	    Optional<Usuario> usuario = usuarioRepository.findById(id);
-	    if (usuario.isPresent()) {
-	        return ResponseEntity.ok(usuario.get());
+		Optional<Usuario> usuario = usuarioRepository.findById(id);
+		if (usuario.isPresent()) {
+			return ResponseEntity.ok(usuario.get());
+		} else {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		}
+	}
+
+	@GetMapping("/users/{id}/foto")
+	public ResponseEntity<String> obterFotoPerfil(@PathVariable Long id) {
+	    Optional<Usuario> usuarioOptional = usuarioRepository.findById(id);
+	    if (usuarioOptional.isPresent()) {
+	        Usuario usuario = usuarioOptional.get();
+	        byte[] foto = usuario.getFoto_perfil();
+
+	        if (foto != null && foto.length > 0) {
+	            // Codifica a imagem em Base64
+	            String base64 = Base64.getEncoder().encodeToString(foto);
+	            return ResponseEntity.ok(base64);  // Retorna a string Base64 da imagem
+	        } else {
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Foto não encontrada.");
+	        }
 	    } else {
-	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuário não encontrado.");
 	    }
 	}
+
 	@PutMapping(value = "/users/{id}", consumes = { "multipart/form-data" })
 	public ResponseEntity<String> atualizarUsuario(@PathVariable Long id, @RequestPart("usuario") String usuarioJson,
 			@RequestPart(value = "foto_perfil", required = false) MultipartFile fotoPerfil) {
@@ -102,7 +119,6 @@ public class UsuarioController {
 			if (usuarioExistenteOptional.isPresent()) {
 				Usuario usuarioExistente = usuarioExistenteOptional.get();
 
-				
 				if (!usuarioExistente.isAtivo() && usuario.isAtivo()) {
 					usuarioService.verificarLimiteUsuariosAtivos();
 				}
@@ -112,7 +128,6 @@ public class UsuarioController {
 				usuarioExistente.setUsername(usuario.getUsername());
 				usuarioExistente.setAtivo(usuario.isAtivo());
 
-				
 				if (fotoPerfil != null && !fotoPerfil.isEmpty()) {
 					usuarioExistente.setFoto_perfil(fotoPerfil.getBytes());
 				}
