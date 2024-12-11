@@ -16,31 +16,31 @@ import {
 } from "@mui/material";
 
 function EditarUsuario() {
-  const { id } = useParams(); // Obter o ID do usuário da URL
+  const { id } = useParams(); 
   const navigate = useNavigate();
 
   const [user, setUser] = useState({
     nome: "",
     username: "",
     email: "",
-    telefone: "", // Campo de telefone
+    telefone: "", 
     ativo: false,
     foto_perfil: "",
-    nivelPermissaoId: "", // Campo para armazenar o nível de permissão
+    nivelPermissaoId: "", 
   });
 
-  const [imagem, setImagem] = useState(null); // Armazenar a imagem selecionada
-  const [fotoPreview, setFotoPreview] = useState(""); // Armazenar a URL da imagem para pré-visualização
-  const [niveisPermissao, setNiveisPermissao] = useState([]); // Estado para armazenar os níveis de permissão
+  const [imagem, setImagem] = useState(null); 
+  const [fotoPreview, setFotoPreview] = useState(""); 
+  const [niveisPermissao, setNiveisPermissao] = useState([]); 
 
-  // Buscar dados do usuário e níveis de permissão ao carregar o componente
+  
   useEffect(() => {
     const fetchUserAndPermissions = async () => {
       try {
-        // Buscar dados do usuário
+        
         const userResponse = await axios.get(`http://localhost:8080/api/users/${id}`);
 
-        // Buscar níveis de permissão
+        
         const niveisPermissaoResponse = await axios.get("http://localhost:8080/api/niveis/all");
 
         const fotoPerfilURL = "/default-avatar.png";
@@ -63,10 +63,10 @@ function EditarUsuario() {
           nome: userResponse.data.nome,
           username: userResponse.data.username,
           email: userResponse.data.email,
-          telefone: userResponse.data.telefone || "", // Definir telefone
+          telefone: userResponse.data.telefone || "", 
           ativo: userResponse.data.ativo,
           foto_perfil: fotoComBase64,
-          nivelPermissaoId: userResponse.data.nivelPermissaoId || "", // Definindo nível de permissão
+          nivelPermissaoId: userResponse.data.nivelPermissaoId || "", 
         });
 
         setNiveisPermissao(niveisPermissaoResponse.data);
@@ -91,7 +91,7 @@ function EditarUsuario() {
     if (file) {
       setImagem(file);
 
-      // Gerar a URL da imagem para a pré-visualização
+      
       const reader = new FileReader();
       reader.onloadend = () => {
         setFotoPreview(reader.result);
@@ -100,16 +100,18 @@ function EditarUsuario() {
     }
   };
 
+  
+
   const handleSubmit = async () => {
     try {
       const formData = new FormData();
 
-      // Adicionando o JSON do usuário no campo "usuario"
+      
       const usuarioJson = JSON.stringify({
         nome: user.nome,
         username: user.username,
         email: user.email,
-        telefone: user.telefone, // Adicionar telefone ao JSON
+        telefone: user.telefone, 
         ativo: user.ativo,
         nivelPermissao: {
           id: user.nivelPermissaoId,
@@ -119,9 +121,9 @@ function EditarUsuario() {
 
       formData.append("usuario", usuarioJson);
 
-      // Adicionando a imagem, caso exista
+      
       if (imagem) {
-        formData.append("foto_perfil", imagem); // Backend espera "foto_perfil"
+        formData.append("foto_perfil", imagem); 
       }
 
       console.log("Dados enviados (FormData):");
@@ -129,7 +131,7 @@ function EditarUsuario() {
         console.log(`${pair[0]}: ${pair[1]}`);
       }
 
-      // Enviando a requisição
+      
       const response = await axios.put(
         `http://localhost:8080/api/users/${id}`,
         formData,
@@ -145,7 +147,7 @@ function EditarUsuario() {
       navigate("/");
     } catch (error) {
       console.error("Erro ao atualizar usuário:", error.response?.data || error.message);
-      alert("Erro ao atualizar usuário.");
+      alert(error.response?.data || "Erro ao enviar dados.");
     }
   };
 
@@ -171,7 +173,7 @@ function EditarUsuario() {
           Adicionar imagem
           <input
             type="file"
-            onChange={handleImageChange}  // Usando handleImageChange
+            onChange={handleImageChange}  
             hidden
           />
         </Button>

@@ -13,7 +13,7 @@ import {
   Avatar,
   Switch,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";  // Importe o useNavigate
+import { useNavigate } from "react-router-dom";  
 
 function CadastroUsuario() {
   const [formData, setFormData] = useState({
@@ -28,11 +28,11 @@ function CadastroUsuario() {
   });
 
   const [niveisPermissao, setNiveisPermissao] = useState([]);
-  const [fotoPreview, setFotoPreview] = useState(null); // Estado para a pré-visualização da imagem
+  const [fotoPreview, setFotoPreview] = useState(null); 
 
-  const navigate = useNavigate();  // Defina o navigate
+  const navigate = useNavigate();  
 
-  // Buscar níveis de permissão no backend assim que o formulário carregar
+  
   useEffect(() => {
     const fetchNiveisPermissao = async () => {
       try {
@@ -58,7 +58,6 @@ function CadastroUsuario() {
     const file = e.target.files[0];
     setFormData({ ...formData, fotoPerfil: file });
     if (file) {
-      // Definir o caminho da imagem para a pré-visualização
       const reader = new FileReader();
       reader.onloadend = () => {
         setFotoPreview(reader.result);
@@ -68,6 +67,16 @@ function CadastroUsuario() {
   };
 
   const handleSubmit = async () => {
+    
+    if (!formData.nome || !formData.email || !formData.senha || !formData.nivelPermissaoId) {
+      alert("Por favor, preencha todos os campos obrigatórios.");
+      return;
+    }
+
+    
+
+
+
     const formDataToSubmit = new FormData();
     const usuarioObj = {
       nome: formData.nome,
@@ -92,10 +101,10 @@ function CadastroUsuario() {
         { headers: { "Content-Type": "multipart/form-data" } }
       );
       alert(response.data);
-      navigate("/"); // Redirecionar após o cadastro
+      navigate("/"); 
     } catch (error) {
       console.error("Erro ao enviar dados: ", error.response?.data);
-      alert("Erro ao enviar dados.");
+      alert(error.response?.data || "Erro ao enviar dados.");
     }
   };
 
@@ -107,7 +116,7 @@ function CadastroUsuario() {
       <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", mb: 3 }}>
         <Avatar
           sx={{ width: 80, height: 80, bgcolor: "grey.300" }}
-          src={fotoPreview || "/default-avatar.png"} // Imagem padrão se não houver pré-visualização
+          src={fotoPreview || "/default-avatar.png"} 
         />
       </Box>
 
@@ -126,7 +135,7 @@ function CadastroUsuario() {
 
       <TextField
         name="nome"
-        label="Nome"
+        label="Nome*"
         value={formData.nome}
         onChange={handleChange}
         fullWidth
@@ -134,7 +143,7 @@ function CadastroUsuario() {
       />
       <TextField
         name="username"
-        label="Username"
+        label="Username*"
         value={formData.username}
         onChange={handleChange}
         fullWidth
@@ -142,7 +151,7 @@ function CadastroUsuario() {
       />
       <TextField
         name="email"
-        label="E-mail"
+        label="E-mail*"
         value={formData.email}
         onChange={handleChange}
         fullWidth
@@ -158,7 +167,7 @@ function CadastroUsuario() {
       />
       <TextField
         name="senha"
-        label="Senha"
+        label="Senha*"
         type="password"
         value={formData.senha}
         onChange={handleChange}
@@ -172,7 +181,7 @@ function CadastroUsuario() {
         <Select
           name="nivelPermissaoId"
           value={formData.nivelPermissaoId}
-          label="Nível de Permissão"
+          label="Nível de Permissão*"
           onChange={handleChange}
         >
           {niveisPermissao.map((nivel) => (

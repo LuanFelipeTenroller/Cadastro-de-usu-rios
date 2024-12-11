@@ -37,11 +37,11 @@ public class Usuario {
 	@JoinColumn(name = "nivelpermissao_id")
 	private NivelPermissao nivelPermissao;
 
-	// Construtor padrão
+	
 	public Usuario() {
 	}
 
-	// Construtor com parâmetros
+	
 	public Usuario(String nome, String email, boolean ativo, String username, String senha, String telefone,
 			NivelPermissao nivelPermissao) {
 		this.nome = nome;

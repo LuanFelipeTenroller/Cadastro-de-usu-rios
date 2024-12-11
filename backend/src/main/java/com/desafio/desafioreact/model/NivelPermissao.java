@@ -10,7 +10,7 @@ import jakarta.persistence.Id;
 public class NivelPermissao {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY) // Estratégia de geração do ID
+	@GeneratedValue(strategy = GenerationType.IDENTITY) 
 	private Long id;
 
 	@Column(name = "permissao", nullable = false)
@@ -18,7 +18,7 @@ public class NivelPermissao {
 
 	private String descricao;
 
-	// Getters e Setters
+	
 	public Long getId() {
 		return id;
 	}
@@ -34,10 +34,6 @@ public class NivelPermissao {
 	public void setPermissao(String permissao) {
 		this.permissao = permissao;
 	}
-
-
-
-
 
 
 	public void setId(Long id) {

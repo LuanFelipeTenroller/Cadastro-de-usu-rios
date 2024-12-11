@@ -16,7 +16,7 @@ import com.desafio.desafioreact.service.NivelPermissaoService;
 public class NivelPermissaoController {
 
     @Autowired
-    private NivelPermissaoService nivelPermissaoService; // Injeção do Service
+    private NivelPermissaoService nivelPermissaoService; 
 
     @GetMapping("/all")
     public ResponseEntity<List<NivelPermissao>> getAllNiveis() {
